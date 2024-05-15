@@ -48,35 +48,25 @@ function Game2048() {
 
   const handleMouseStart = (e) => {
     setTouchStart([e.clientX, e.clientY]);
-    console.log("touchStart", e.clientX, e.clientY);
   };
   const handleMouseEnd = (e) => {
     setTouchEnd([e.clientX, e.clientY]);
-    console.log("touchEnd", e.clientX, e.clientY);
-
-    detectDirection();
   };
   const handleTouchStart = (e) => {
     setTouchStart([e.touches[0].clientX, e.touches[0].clientY]);
   };
   const handleTouchEnd = (e) => {
     setTouchEnd([e.changedTouches[0].clientX, e.changedTouches[0].clientY]);
-    detectDirection();
   };
   const detectDirection = () => {
     const diffX = touchEnd[0] - touchStart[0];
     const diffY = touchEnd[1] - touchStart[1];
-    console.log("diffX diffY", diffX, diffY);
     if (Math.abs(diffX) > Math.abs(diffY)) {
-      diffX > 0 ? setDirection("left") : setDirection("right");
+      diffX > 0 ? setDirection("right") : setDirection("left");
     } else {
       diffY > 0 ? setDirection("down") : setDirection("up");
     }
-    addNewNumber();
   };
-
-  // useEffect(() => {
-  // }, [direction]);
 
   // new tile
   const getRandom = (min, max) => {
@@ -92,7 +82,6 @@ function Game2048() {
       return obj.posX === numX && obj.posY === numY;
     });
     const makeNewTile = () => {
-      console.log("위치 중복이 아니다!!!!!!!!!!!", isDuplicate);
       const newTile = {
         num: num,
         posX: numX,
@@ -117,44 +106,28 @@ function Game2048() {
   };
 
   useEffect(() => {
-    // 페이지 로드
-    // setNumberArray((prev) => [
-    //   ...prev,
-    //   {
-    //     num: 2,
-    //     posX: 0,
-    //     posY: 0,
-    //     position: { top: 0, left: 0 },
-    //   },
-    // ]);
     console.log("load -------------");
-    console.log("방향", direction, " 없는게 맞음");
-    console.log("array length", numberArray.length, "0인게 맞음");
+    console.log("방향", direction);
     console.log("------------finish load");
   }, []);
 
   useEffect(() => {
-    console.log("number array modified--------------");
-
-    console.log("numberArray ", numberArray);
-
-    console.log("-------------number array modified");
-  }, [numberArray]);
-
-  useEffect(() => {
-    console.log(direction);
     return () => {
+      console.log("touch end --------------");
       // 문제구간
       if (numberArray.length < 16) {
-        // console.log("숫자를 더한다");
-        // addNewNumber();
+        detectDirection();
+        addNewNumber();
+        console.log("numberArray ", numberArray);
+        console.log("direction", direction);
       } else {
         console.log("게임끝");
         finishGame();
       }
-      // numberArray.length < 16 ? addNewNumber() : finishGame();
+
+      console.log("-------------touend ");
     };
-  }, [direction]);
+  }, [touchEnd]);
 
   return (
     <GameWrapper
