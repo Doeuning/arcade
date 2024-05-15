@@ -48,12 +48,11 @@ function Game2048() {
 
   const handleMouseStart = (e) => {
     setTouchStart([e.clientX, e.clientY]);
-    console.log("touchStart",e.clientX, e.clientY)
-
+    console.log("touchStart", e.clientX, e.clientY);
   };
   const handleMouseEnd = (e) => {
     setTouchEnd([e.clientX, e.clientY]);
-    console.log("touchEnd",e.clientX, e.clientY)
+    console.log("touchEnd", e.clientX, e.clientY);
 
     detectDirection();
   };
@@ -67,7 +66,7 @@ function Game2048() {
   const detectDirection = () => {
     const diffX = touchEnd[0] - touchStart[0];
     const diffY = touchEnd[1] - touchStart[1];
-    console.log("diffX diffY",diffX,diffY)
+    console.log("diffX diffY", diffX, diffY);
     if (Math.abs(diffX) > Math.abs(diffY)) {
       diffX > 0 ? setDirection("left") : setDirection("right");
     } else {
