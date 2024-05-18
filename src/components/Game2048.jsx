@@ -1,5 +1,6 @@
 "use client";
 
+import { Shadows_Into_Light_Two } from "next/font/google";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -32,14 +33,20 @@ const NumberBox = styled.div`
 
 function Game2048() {
   // number array
-  const [numberArray, setNumberArray] = useState([
-    {
-      num: 2,
-      posX: 0,
-      posY: 0,
-      position: { top: 0, left: 0 },
-    },
-  ]);
+  const getRandom = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
+  const firstPosX = getRandom(0, 3);
+  const firstPosY = getRandom(0, 3);
+  const firstObj = {
+    num: 2,
+    posX: firstPosX,
+    posY: firstPosY,
+    position: { top: firstPosY * 100, left: firstPosX * 100 },
+  };
+  const [numberArray, setNumberArray] = useState([]);
 
   // direction
   const [touchStart, setTouchStart] = useState([0, 0]);
@@ -51,53 +58,63 @@ function Game2048() {
   };
   const handleMouseEnd = (e) => {
     setTouchEnd([e.clientX, e.clientY]);
+
+    const diffX = touchStart[0] - e.clientX;
+    const diffY = touchStart[1] - e.clientY;
+    console.log(diffX, diffY);
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      diffX > 0 ? setDirection("left") : setDirection("right");
+    } else {
+      diffY > 0 ? setDirection("up") : setDirection("down");
+    }
+    moveTiles();
   };
   const handleTouchStart = (e) => {
     setTouchStart([e.touches[0].clientX, e.touches[0].clientY]);
   };
   const handleTouchEnd = (e) => {
     setTouchEnd([e.changedTouches[0].clientX, e.changedTouches[0].clientY]);
+    setTimeout(() => {
+      detectDirection();
+    }, 1000);
   };
-  const detectDirection = () => {
-    const diffX = touchEnd[0] - touchStart[0];
-    const diffY = touchEnd[1] - touchStart[1];
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      diffX > 0 ? setDirection("right") : setDirection("left");
-    } else {
-      diffY > 0 ? setDirection("down") : setDirection("up");
-    }
+  const moveTiles = () => {
+    console.log("move tiles");
+  };
+  const addTileNumber = () => {
+    console.log("add numbers");
   };
 
   // new tile
-  const getRandom = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
   const addNewNumber = () => {
     const num = getRandom(1, 2) * 2;
     const numX = getRandom(0, 3);
     const numY = getRandom(0, 3);
-    const isDuplicate = numberArray.some((obj) => {
-      return obj.posX === numX && obj.posY === numY;
+
+    setNumberArray((prevArray) => {
+      const isDuplicate = prevArray.length
+        ? prevArray.some((obj) => {
+            console.log(numX, numY, obj.posX === numX, obj.posY === numY);
+            return obj.posX === numX && obj.posY === numY;
+          })
+        : false;
+      if (!isDuplicate) {
+        const newTile = {
+          num: num,
+          posX: numX,
+          posY: numY,
+          position: {
+            top: numY * 100,
+            left: numX * 100,
+          },
+        };
+        return [...prevArray, newTile];
+      } else {
+        addNewNumber();
+        return prevArray;
+      }
     });
-    const makeNewTile = () => {
-      const newTile = {
-        num: num,
-        posX: numX,
-        posY: numY,
-        position: {
-          top: numY * 100,
-          left: numX * 100,
-        },
-      };
-      setNumberArray((prev) => [...prev, newTile]);
-    };
-    if (isDuplicate) {
-      addNewNumber();
-    } else {
-      makeNewTile();
-    }
   };
 
   // finish game
@@ -108,6 +125,8 @@ function Game2048() {
   useEffect(() => {
     console.log("load -------------");
     console.log("방향", direction);
+
+    setNumberArray((prev) => [...prev, firstObj]);
     console.log("------------finish load");
   }, []);
 
@@ -115,15 +134,15 @@ function Game2048() {
     return () => {
       console.log("touch end --------------");
       // 문제구간
-      if (numberArray.length < 16) {
-        detectDirection();
+      if (numberArray.length < 15) {
         addNewNumber();
         console.log("numberArray ", numberArray);
-        console.log("direction", direction);
       } else {
         console.log("게임끝");
         finishGame();
       }
+
+      console.log("direction", direction);
 
       console.log("-------------touend ");
     };
