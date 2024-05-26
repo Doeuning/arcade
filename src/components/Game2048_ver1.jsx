@@ -29,7 +29,7 @@ const NumberBox = styled.div`
   font-weight: 700;
   font-size: 50px;
   color: #fff;
-  transition: position 0.3s;
+  transition: all 0.3s;
 `;
 
 function Game2048() {
@@ -75,12 +75,12 @@ function Game2048() {
     } else {
       diffY > 0 ? setDirection("up") : setDirection("down");
     }
-    moveTiles();
-    if (!checkAllNonZero(numberArray)) {
-      addNewNumber();
-    } else {
+    if (checkAllNonZero(numberArray)) {
       finishGame();
+      return false;
     }
+    moveTiles();
+    addNewNumber();
   };
   const handleTouchStart = (e) => {
     setTouchStart([e.touches[0].clientX, e.touches[0].clientY]);
@@ -92,12 +92,37 @@ function Game2048() {
     }, 1000);
   };
   const moveTiles = () => {
-    console.log("move tiles");
+    console.log("move left");
+    setNumberArray((prevArray) => {
+      const newArray = prevArray.map((arr) => [...arr]);
+      return newArray.map((row, index) => {
+        const removeZero = row.filter((num) => {
+          return num > 0;
+        });
+        console.log(index, "filter zero", removeZero);
+
+        const addNumbers = removeZero.map((num, i) => {
+          if (num === removeZero[i + 1]) {
+            return num * 2;
+          } else if (num === removeZero[i - 1]) {
+            return 0;
+          } else {
+            return num;
+          }
+        });
+        console.log(index, "add number ", addNumbers);
+
+        const zerosCount = row.length - addNumbers.length;
+        console.log("innn", [...addNumbers, ...Array(zerosCount).fill(0)]);
+        return [...addNumbers, ...Array(zerosCount).fill(0)];
+      });
+    });
   };
-  const addTileNumber = () => {};
 
   // new tile
   const addNewNumber = () => {
+    console.log("adddddddddddddd", numberArray);
+
     setNumberArray(() => {
       const newArray = numberArray.map((arr) => [...arr]);
       const r = getRandom(0, 3);
@@ -126,6 +151,15 @@ function Game2048() {
 
     console.log("------------finish load");
   }, []);
+
+  useEffect(() => {
+    return () => {
+      console.log(
+        "------------numberArray changed---------------------",
+        numberArray
+      );
+    };
+  }, [numberArray]);
 
   useEffect(() => {
     return () => {
