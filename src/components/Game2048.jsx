@@ -1,6 +1,5 @@
 "use client";
 
-import { Shadows_Into_Light_Two } from "next/font/google";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -75,10 +74,9 @@ function Game2048() {
   };
   const handleTouchEnd = (e) => {
     setTouchEnd([e.changedTouches[0].clientX, e.changedTouches[0].clientY]);
-    setTimeout(() => {
-      detectDirection();
-      7;
-    }, 1000);
+    // setTimeout(() => {
+    detectDirection();
+    // }, 1000);
   };
   const moveTiles = () => {
     if (direction === "left") {
