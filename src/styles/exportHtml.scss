@@ -1,0 +1,30 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vh;
+  height: 100vh;
+}
+.container {
+  text-align: center;
+  box-sizing: content-box;
+  width: 400px;
+  height: 400px;
+  border: 10px solid #666;
+  border-radius: 10px;
+  background: #000;
+  .box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    border: 10px solid #000;
+    background: #666;
+    color: #000;
+    font-weight: 700;
+    font-size: 50px;
+    text-align: center;
+  }
+}

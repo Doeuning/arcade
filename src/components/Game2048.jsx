@@ -1,6 +1,5 @@
 "use client";
 
-import { Shadows_Into_Light_Two } from "next/font/google";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
@@ -91,6 +90,50 @@ function Game2048() {
   const goAction = () => {
     const moveTiles = () => {
       console.log("move tiles");
+      // 이전 기록
+      // const moveTiles = () => {
+      //   if (direction === "left") {
+      //     setNumberArray((prevArray) => {
+      //       return prevArray
+      //         .filter((tile, i) => {
+      //           if (tile.posY === prevArray[i + 1]?.posY) {
+      //             if (tile.num === prevArray[i + 1]?.num) {
+      //               return false;
+      //             }
+      //           } else {
+      //             return true;
+      //           }
+      //         })
+      //         .map((tile, i) => {
+      //           if (
+      //             tile.posY === prevArray[i + 1]?.posY &&
+      //             tile.num === prevArray[i + 1].num
+      //           ) {
+      //             console.log("조건 부합 ", tile);
+      //             return { ...tile, num: tile.num * 2, posX: 0 };
+      //           }
+      //           return tile;
+      //         });
+      //     });
+      //     console.log(numberArray);
+      //   }
+      //   // direction을 받아서
+      //   // left일 때
+      //   // tile의 posX와 posX-1의 posY가 같으면
+      //   // number이 같으면
+      //   // (tile의 posX를 제일 작은 수로)
+      //   // tile의 posX를 posX-1로 이동하고
+      //   // tile의 number를 더한다
+      //   // tile 객체를 삭제한다
+      //   // bottom일 때
+      //   // tile의 posY와 posY+1의 posX가 같으면
+      //   // number이 같으면
+      //   // (tile의 posY를 제일 큰 수로)
+      //   // tile의 posY를 posY+1로 이동하고
+      //   // tile의 number를 더한다
+      //   // tile 객체를 삭제한다
+      //   console.log("move tiles");
+      // };
       if (direction === "left") {
         setNumberArray((prevArray) => {
           return prevArray.map((obj) => {
@@ -134,6 +177,7 @@ function Game2048() {
     };
     moveTiles();
     addTileNumber();
+    addNewNumber();
   };
 
   // new tile
@@ -169,13 +213,12 @@ function Game2048() {
 
   const active = () => {
     if (numberArray.length < 16) {
-      addNewNumber();
+      goAction();
       console.log("numberArray ", numberArray);
     } else {
       console.log("게임끝");
       finishGame();
     }
-    goAction();
   };
 
   // finish game
@@ -198,10 +241,6 @@ function Game2048() {
     >
       {numberArray.length &&
         numberArray.map((numObj, i) => {
-          {
-            /* console.log(numberArray, "###########################");
-          console.log("----JSX load --number object 생성", i, numObj); */
-          }
           return (
             <NumberBox
               key={i}

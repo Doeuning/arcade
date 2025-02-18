@@ -80,7 +80,7 @@ function Game2048() {
       return false;
     }
     moveTiles();
-    addNewNumber();
+    console.log("move left done", numberArray);
   };
   const handleTouchStart = (e) => {
     setTouchStart([e.touches[0].clientX, e.touches[0].clientY]);
@@ -92,39 +92,60 @@ function Game2048() {
     }, 1000);
   };
   const moveTiles = () => {
-    console.log("move left");
-    setNumberArray((prevArray) => {
-      const newArray = prevArray.map((arr) => [...arr]);
-      return newArray.map((row, index) => {
-        const removeZero = row.filter((num) => {
-          return num > 0;
-        });
-        console.log(index, "filter zero", removeZero);
+    console.log("move left", numberArray);
 
-        const addNumbers = removeZero.map((num, i) => {
-          if (num === removeZero[i + 1]) {
-            return num * 2;
-          } else if (num === removeZero[i - 1]) {
-            return 0;
-          } else {
-            return num;
-          }
-        });
-        console.log(index, "add number ", addNumbers);
+    // setNumberArray((prevArray) => {
+    //   return prevArray.map((row, index) => {
+    //     const removeZero = row.filter((num) => {
+    //       return num > 0;
+    //     });
+    //     console.log(index, "filter zero", removeZero);
 
-        const zerosCount = row.length - addNumbers.length;
-        console.log("innn", [...addNumbers, ...Array(zerosCount).fill(0)]);
-        return [...addNumbers, ...Array(zerosCount).fill(0)];
+    //     const addNumbers = removeZero.map((num, i) => {
+    //       if (num === removeZero[i + 1]) {
+    //         return num * 2;
+    //       } else if (num === removeZero[i - 1]) {
+    //         return 0;
+    //       } else {
+    //         return num;
+    //       }
+    //     });
+    //     console.log(index, "add number ", addNumbers);
+
+    //     const zerosCount = row.length - addNumbers.length;
+    //     console.log("innn", [...addNumbers, ...Array(zerosCount).fill(0)]);
+    //     return [...addNumbers, ...Array(zerosCount).fill(0)];
+    //   });
+    // });
+    const calculatedArray = numberArray.map((row, index) => {
+      const removeZero = row.filter((num) => {
+        return num > 0;
       });
+      console.log(index, "filter zero", removeZero);
+
+      const addNumbers = removeZero.map((num, i) => {
+        if (num === removeZero[i + 1]) {
+          return num * 2;
+        } else if (num === removeZero[i - 1]) {
+          return 0;
+        } else {
+          return num;
+        }
+      });
+      console.log(index, "add number ", addNumbers);
+
+      const zerosCount = row.length - addNumbers.length;
+      console.log("innn", [...addNumbers, ...Array(zerosCount).fill(0)]);
+      return [...addNumbers, ...Array(zerosCount).fill(0)];
     });
+    setNumberArray(calculatedArray);
+    addNewNumber(calculatedArray);
   };
-
   // new tile
-  const addNewNumber = () => {
-    console.log("adddddddddddddd", numberArray);
-
+  const addNewNumber = (calculatedArray) => {
+    const array = calculatedArray ? calculatedArray : numberArray;
     setNumberArray(() => {
-      const newArray = numberArray.map((arr) => [...arr]);
+      const newArray = array.map((arr) => [...arr]);
       const r = getRandom(0, 3);
       const c = getRandom(0, 3);
       if (newArray[r][c] === 0) {
@@ -134,6 +155,17 @@ function Game2048() {
         return addNewNumber();
       }
     });
+    // setNumberArray(() => {
+    //   const newArray = numberArray.map((arr) => [...arr]);
+    //   const r = getRandom(0, 3);
+    //   const c = getRandom(0, 3);
+    //   if (newArray[r][c] === 0) {
+    //     newArray[r][c] = 2;
+    //     return newArray;
+    //   } else {
+    //     return addNewNumber();
+    //   }
+    // });
   };
 
   // finish game
