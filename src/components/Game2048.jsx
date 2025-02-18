@@ -29,6 +29,7 @@ const NumberBox = styled.div`
   font-weight: 700;
   font-size: 50px;
   color: #fff;
+  transition: 0.3s ease-in all;
 `;
 
 function Game2048() {
@@ -68,22 +69,71 @@ function Game2048() {
     } else {
       diffY > 0 ? setDirection("up") : setDirection("down");
     }
-    moveTiles();
+    active();
   };
   const handleTouchStart = (e) => {
     setTouchStart([e.touches[0].clientX, e.touches[0].clientY]);
   };
   const handleTouchEnd = (e) => {
     setTouchEnd([e.changedTouches[0].clientX, e.changedTouches[0].clientY]);
-    setTimeout(() => {
-      detectDirection();
-    }, 1000);
+
+    const diffX = touchStart[0] - e.clientX;
+    const diffY = touchStart[1] - e.clientY;
+    console.log(diffX, diffY);
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      diffX > 0 ? setDirection("left") : setDirection("right");
+    } else {
+      diffY > 0 ? setDirection("up") : setDirection("down");
+    }
+    active();
   };
-  const moveTiles = () => {
-    console.log("move tiles");
-  };
-  const addTileNumber = () => {
-    console.log("add numbers");
+  const goAction = () => {
+    const moveTiles = () => {
+      console.log("move tiles");
+      if (direction === "left") {
+        setNumberArray((prevArray) => {
+          return prevArray.map((obj) => {
+            const newPosX = obj.posX - 1;
+            if (newPosX >= 0) {
+              return {
+                ...obj,
+                posX: newPosX,
+                position: { ...obj.position, left: newPosX * 100 },
+              };
+            } else {
+              return obj;
+            }
+          });
+          // const isDuplicate = prevArray.length
+          //   ? prevArray.some((obj) => {
+          //       console.log(numX, numY, obj.posX === numX, obj.posY === numY);
+          //       return obj.posX === numX && obj.posY === numY;
+          //     })
+          //   : false;
+          // if (!isDuplicate) {
+          //   const newTile = {
+          //     num: num,
+          //     posX: numX,
+          //     posY: numY,
+          //     position: {
+          //       top: numY * 100,
+          //       left: numX * 100,
+          //     },
+          //   };
+          //   return [...prevArray, newTile];
+          // } else {
+          //   addNewNumber();
+          //   return prevArray;
+          // }
+        });
+      }
+    };
+    const addTileNumber = () => {
+      console.log("add numbers");
+    };
+    moveTiles();
+    addTileNumber();
   };
 
   // new tile
@@ -117,6 +167,17 @@ function Game2048() {
     });
   };
 
+  const active = () => {
+    if (numberArray.length < 16) {
+      addNewNumber();
+      console.log("numberArray ", numberArray);
+    } else {
+      console.log("게임끝");
+      finishGame();
+    }
+    goAction();
+  };
+
   // finish game
   const finishGame = () => {
     alert("죽었다!");
@@ -124,29 +185,9 @@ function Game2048() {
 
   useEffect(() => {
     console.log("load -------------");
-    console.log("방향", direction);
-
-    setNumberArray((prev) => [...prev, firstObj]);
+    addNewNumber();
     console.log("------------finish load");
   }, []);
-
-  useEffect(() => {
-    return () => {
-      console.log("touch end --------------");
-      // 문제구간
-      if (numberArray.length < 15) {
-        addNewNumber();
-        console.log("numberArray ", numberArray);
-      } else {
-        console.log("게임끝");
-        finishGame();
-      }
-
-      console.log("direction", direction);
-
-      console.log("-------------touend ");
-    };
-  }, [touchEnd]);
 
   return (
     <GameWrapper
