@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Game2048 from "@/components/Game2048";
-// import Game2048 from "@/components/Game2048_ver1";
 // import Game2048 from "@/components/Game2048";
+// import Game2048 from "@/components/Game2048_ver1";
+import Game2048 from "@/components/Game2048_objects_in_array";
 import ExportHtml from "@/pages/exportHtml";
 import { StrictMode } from "react";
 

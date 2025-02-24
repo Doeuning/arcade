@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 
 const GameWrapper = styled.div`
@@ -33,13 +33,6 @@ const NumberBox = styled.div`
 
 function Game2048() {
   // number array
-  const [numberPosition, setNumberPosition] = useState([
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-  ]);
-  const [isAvailable, setIsAvailable] = useState(false);
   const getRandom = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -53,7 +46,13 @@ function Game2048() {
     posY: firstPosY,
     position: { top: firstPosY * 100, left: firstPosX * 100 },
   };
-  const [numberArray, setNumberArray] = useState([]);
+  const [numberArray, setNumberArray] = useState([
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ]);
+  const [count, setCount] = useState(0);
 
   // direction
   const [touchStart, setTouchStart] = useState([0, 0]);
@@ -100,39 +99,47 @@ function Game2048() {
       console.log("move tiles");
       if (direction === "left") {
         // setNumberPosition((prevArray) => {
-        //   return prevArray.foreach((row, i) => {
-        //     return row.foreach((cell, j) => {
+        //   return prevArray.forEach((row, i) => {
+        //     return row.forEach((cell, j) => {
         //       if (cell) {
 
         //       }
         //     });
         //   });
         // });
-        numberPosition.foreach((row, i) => {
-          row.foreach((cell, j) => {
-            if (cell) {
-              for (let index = j; index < row.length; index++) {
-                if (cell === numberPositionp[i][index]) {
-                  console.log("같은 숫자");
-                }
+        numberArray.forEach((row, i) => {
+          // row.forEach((obj, j) => {
+          for (let j = 0; j < row[i].length; j++) {
+            if (row[i][j] !== 0) {
+              // for (let index = 0; index < obj.length; index++) {
+              if (row[i][j].num === row[i][j + 1].num) {
+                console.log("다음 숫자랑 같은 숫자");
+                setNumberArray((prevArray) => {
+                  return prevArray.map((prevRow, prevI) => {
+                    return prevRow.map((prevObj, prevJ) => {
+                      if (prevI === i && prevJ === j) {
+                        return null;
+                      } else if (prevI === i && prevJ === j + 1) {
+                        return {
+                          num: prevObj.num * 2,
+                          posX: i,
+                          posY: j,
+                          position: {
+                            top: i * 100,
+                            left: j * 100,
+                          },
+                        };
+                      } else {
+                        return prevObj;
+                      }
+                    });
+                  });
+                });
+                break;
               }
             }
-          });
+          }
         });
-        // setNumberArray((prevArray) => {
-        //   return prevArray.map((obj) => {
-        //     const newPosX = obj.posX - 1;
-        //     if (newPosX >= 0) {
-        //       return {
-        //         ...obj,
-        //         posX: newPosX,
-        //         position: { ...obj.position, left: newPosX * 100 },
-        //       };
-        //     } else {
-        //       return obj;
-        //     }
-        //   });
-        // });
       }
     };
     const addTileNumber = () => {
@@ -144,66 +151,45 @@ function Game2048() {
   };
 
   // new tile
-  const addNewNumber = () => {
+  const addNewNumber = useCallback(() => {
     const num = getRandom(1, 2) * 2;
     const numX = getRandom(0, 3);
     const numY = getRandom(0, 3);
-    const available = numberPosition.some((row, i) => {
-      return i === numY
-        ? row.map((cell, j) => (j === numX ? true : false))
-        : false;
+    const available = numberArray.some((row, i) => {
+      if (i === numY) {
+        return row.some((obj, j) => j === numX && obj !== 0);
+      }
+      return false;
     });
 
-    if (available) {
-      setIsAvailable(available);
-
-      console.log("isavailable ", available);
-      setNumberPosition((prevArray) => {
-        console.log("-----set numver position ", numberPosition);
-        return prevArray.map((row, i) =>
-          i === numY ? row.map((cell, j) => (j === numX ? num : cell)) : row
-        );
+    console.log("isavailable ", available);
+    setNumberArray((prevArray) => {
+      console.log("-------------set numver array ", numberArray);
+      const newTile = {
+        num: num,
+        posX: numX,
+        posY: numY,
+        position: {
+          top: numY * 100,
+          left: numX * 100,
+        },
+      };
+      return prevArray.map((row, i) => {
+        return row.map((obj, j) => {
+          if (j === numX && i === numY) {
+            return newTile;
+          } else {
+            return obj;
+          }
+        });
       });
-      setNumberArray((prevArray) => {
-        console.log("-------------set numver array ", numberArray);
-        const newTile = {
-          num: num,
-          posX: numX,
-          posY: numY,
-          position: {
-            top: numY * 100,
-            left: numX * 100,
-          },
-        };
-        return [...prevArray, newTile];
-      });
-    } else {
-      addNewNumber();
-    }
+    });
 
-    // setNumberArray((prevArray) => {
-    //   console.log("set numver array isAvailable ", isAvailable);
-
-    //   if (!isAvailable) {
-    //     const newTile = {
-    //       num: num,
-    //       posX: numX,
-    //       posY: numY,
-    //       position: {
-    //         top: numY * 100,
-    //         left: numX * 100,
-    //       },
-    //     };
-    //     return [...prevArray, newTile];
-    //   } else {
-    //     addNewNumber();
-    //     return prevArray;
-    //   }
-    // });
-  };
+    setCount((prev) => prev + 1);
+  }, []);
 
   const active = () => {
-    if (numberArray.length < 16) {
+    if (count < 16) {
       goAction();
       console.log("numberArray ", numberArray);
     } else {
@@ -221,7 +207,7 @@ function Game2048() {
     console.log("load -------------");
     addNewNumber();
     console.log("------------finish load");
-  }, []);
+  }, [addNewNumber]);
 
   return (
     <GameWrapper
@@ -230,17 +216,21 @@ function Game2048() {
       onMouseUp={handleMouseEnd}
       onTouchEnd={handleTouchEnd}
     >
-      {numberArray.length &&
-        numberArray.map((numObj, i) => {
-          return (
+      {numberArray.flatMap((row, i) => {
+        return row
+          .filter((numObj) => numObj !== 0)
+          .map((numObj, j) => (
             <NumberBox
-              key={i}
-              style={{ top: numObj.position.top, left: numObj.position.left }}
+              key={`number_${i}_${j}`}
+              style={{
+                top: numObj.position.top,
+                left: numObj.position.left,
+              }}
             >
               {numObj.num}
             </NumberBox>
-          );
-        })}
+          ));
+      })}
     </GameWrapper>
   );
 }
