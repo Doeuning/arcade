@@ -67,7 +67,6 @@ function Game2048() {
 
     const diffX = touchStart[0] - e.clientX;
     const diffY = touchStart[1] - e.clientY;
-    console.log(diffX, diffY);
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
       diffX > 0 ? setDirection("left") : setDirection("right");
@@ -84,7 +83,6 @@ function Game2048() {
 
     const diffX = touchStart[0] - e.changedTouches[0].clientX;
     const diffY = touchStart[1] - e.changedTouches[0].clientY;
-    console.log(diffX, diffY);
 
     if (Math.abs(diffX) > Math.abs(diffY)) {
       diffX > 0 ? setDirection("left") : setDirection("right");
@@ -96,7 +94,7 @@ function Game2048() {
   };
   const goAction = () => {
     const moveTiles = () => {
-      console.log("move tiles");
+      console.log("move tiles start");
       if (direction === "left") {
         // setNumberPosition((prevArray) => {
         //   return prevArray.forEach((row, i) => {
@@ -141,57 +139,72 @@ function Game2048() {
           }
         });
       }
+      console.log("----------move tiles finished");
+      setTimeout(() => {
+        addNewNumber();
+      }, 1000);
     };
-    const addTileNumber = () => {
-      console.log("add numbers");
+    const plusTileNumber = () => {
+      console.log("plus numbers");
     };
     moveTiles();
-    addTileNumber();
-    addNewNumber();
+    plusTileNumber();
   };
 
   // new tile
-  const addNewNumber = useCallback(() => {
+  const addNewNumber = () => {
+    console.log("add number");
     const num = getRandom(1, 2) * 2;
     const numX = getRandom(0, 3);
     const numY = getRandom(0, 3);
     const available = numberArray.some((row, i) => {
       if (i === numY) {
-        return row.some((obj, j) => j === numX && obj !== 0);
+        console.log("i ", i, "numY ", numY);
+
+        return row.some((obj, j) => {
+          console.log("j ", j, "numX ", numX);
+          console.log("obj ", obj);
+          return j === numX && obj === 0;
+        });
       }
       return false;
     });
 
     console.log("isavailable ", available);
-    setNumberArray((prevArray) => {
-      console.log("-------------set numver array ", numberArray);
-      const newTile = {
-        num: num,
-        posX: numX,
-        posY: numY,
-        position: {
-          top: numY * 100,
-          left: numX * 100,
-        },
-      };
-      return prevArray.map((row, i) => {
-        return row.map((obj, j) => {
-          if (j === numX && i === numY) {
-            return newTile;
-          } else {
-            return obj;
+    if (available) {
+      setNumberArray((prevArray) => {
+        console.log("-------------set numver array ", numberArray);
+        const newTile = {
+          num: num,
+          posX: numX,
+          posY: numY,
+          position: {
+            top: numY * 100,
+            left: numX * 100,
+          },
+        };
+        return prevArray.map((row, i) => {
+          if (i === numY) {
+            return row.map((obj, j) => (j === numX ? newTile : obj));
           }
+          return row;
         });
       });
-    });
+      setCount((prev) => prev + 1);
+      console.log("-------------------------add number finishedt");
+      console.log("numX ", numX, "numY ", numY, "num ", num);
+    } else {
+      addNewNumber();
+    }
+  };
 
-    setCount((prev) => prev + 1);
-  }, []);
+  useEffect(() => {
+    console.log("                     count ", count);
+  }, [count]);
 
   const active = () => {
     if (count < 16) {
       goAction();
-      console.log("numberArray ", numberArray);
     } else {
       console.log("게임끝");
       finishGame();
@@ -207,7 +220,7 @@ function Game2048() {
     console.log("load -------------");
     addNewNumber();
     console.log("------------finish load");
-  }, [addNewNumber]);
+  }, []);
 
   return (
     <GameWrapper
