@@ -140,9 +140,7 @@ function Game2048() {
         });
       }
       console.log("----------move tiles finished");
-      setTimeout(() => {
-        addNewNumber();
-      }, 1000);
+      addNewNumber();
     };
     const plusTileNumber = () => {
       console.log("plus numbers");
@@ -159,21 +157,15 @@ function Game2048() {
     const numY = getRandom(0, 3);
     const available = numberArray.some((row, i) => {
       if (i === numY) {
-        console.log("i ", i, "numY ", numY);
-
         return row.some((obj, j) => {
-          console.log("j ", j, "numX ", numX);
-          console.log("obj ", obj);
           return j === numX && obj === 0;
         });
       }
       return false;
     });
 
-    console.log("isavailable ", available);
     if (available) {
       setNumberArray((prevArray) => {
-        console.log("-------------set numver array ", numberArray);
         const newTile = {
           num: num,
           posX: numX,
@@ -191,8 +183,6 @@ function Game2048() {
         });
       });
       setCount((prev) => prev + 1);
-      console.log("-------------------------add number finishedt");
-      console.log("numX ", numX, "numY ", numY, "num ", num);
     } else {
       addNewNumber();
     }
